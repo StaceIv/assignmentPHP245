@@ -7,7 +7,6 @@
         <meta charset="utf-8" />
         <title>Job Application</title>
     </head>
-
     <body>
         <div id="aForm">
         <h1>Job Application</h1>
@@ -26,6 +25,7 @@
 
             Gender: female <input type="radio" name="gender" value="female"><br>
                     male <input type="radio" name="gender" value="male"><br>
+                  <span class="error">* <?php echo $genderErr;?> </span><br>
             Website URL: <input type="text" name="webURL">
                   <span class="error">* <?php echo $webURLErr;?> </span><br>
 
@@ -41,8 +41,7 @@
             Select your resume to upload:<input type="file" name="resumeFile" id="resume"><br>
                 <input type="submit" value="Upload Resume" name="submit"><br>
     
-
-            <input type="submit" value="Submit Application">
+                <input type="submit" value="Submit Application">
         </form>
         </div>
     </body>

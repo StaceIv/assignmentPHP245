@@ -1,9 +1,9 @@
 <?php
 
 /*
-    1 - Make sure everything is filled out.
-    2 - Valid phone number input.
-    3 - valid email, URL, and IP
+    1 - Make sure everything is filled out. NOT DONE
+    2 - Valid phone number input.           NOT DONE
+    3 - valid email, URL, and IP            NOT DONE
         use PHP filter_var
     4 - At least 2 preferred comm
         methods should be checked off.
@@ -11,28 +11,53 @@
     6 - Max filesize is 2 megabytes.
     7 - Display what the errors are. 
         invalid phone, email, name, etc...
-*/
 
+    PROBLEMS:
+        - When submitted blank, it still tries to print input instead
+    of giving a red message telling the user they must input required info.
+        - How to get file upload for resume?
+        - Check if gender option has been checked off
+        - Check if a preferred communication method has been chosen.
+        - When valid email address is entered, it doesn't display when the 
+    form is submitted.
+        - Email validation doesn't work. Says all emails are invalid.
+        - upload resume.
+*/
 
 /*Check if fields are empty or not.*/
     
-    $nameErr = $phoneErr = $addressErr = $emailErr = $webURLErr = $webIPErr = $genderErr = ""; 
-    $name = $phone = $address = $email = $webURL = $webIP = $gender = "";    
+    $nameErr = $phoneErr = $addressErr = $emailErr = $webURLErr = $webIPErr = $genderErr = $resumeFileErr = ""; 
+    $name = $phone = $address = $email = $webURL = $webIP = $gender = $resumeFile = "";    
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        /*
+            VALIDATE NAME. Checks to see if a name was entered. If not
+            then it prints a message telling the user they must enter a name.
+            It also checks that only alphanumeric characters
+            have been enteredd in the name space.
+            ------------------------------------VALIDATION WORKS.
+        */
         if (empty($_POST["fullName"])) {
             $nameErr = "Name is required";
         } else {
             $name = test_input($_POST["fullName"]);
-            if(!preg_match("/^[a-zA-Z'-]+$/",$name)) { die ("Invalid Name.");}
+            if(!preg_match ("/^[a-zA-Z\s]+$/",$name)) { echo("Invalid Name.");}
         }
 
+        //CHECK ADDRESS
         if (empty($_POST["address"])) {
             $addressErr = "An address is required";
         } else {
             $address = test_input($_POST["address"]);
         }
 
+        /*
+            VALIDATE PHONE NUMBER. Checks to see that the field has not been
+            left blank. If a number has been enetered, it checks to see
+            that the correct format has been used.
+            ---------------------VALIDATION WORKS EXCEPT FOR xxx.xxx.xxxx format
+        */
         if (empty($_POST["phone"])) {
             $phoneErr = "A phone number is required";
         } else {
@@ -40,31 +65,77 @@
             if(!preg_match("/^(\d[\s-]?)?[\(\[\s-]{0,2}?\d{3}[\)\]\s-]{0,2}?\d{3}[\s-]?\d{4}$/i",$phone)) { die ("Invalid Phone Number.");}
         }
 
-    /*    if (empty($_POST["email"])) {
+        /*
+            VALIDATE EMAIL. If an email has been entered, it checks to see
+            that the email is valid.
+            --------------------------when stacey.ivanovic007@gmail.com is
+                                      entered, it said invalid.
+        */
+        if (empty($_POST["email"])) {
             $emailErr = "Email is required";
         } else {
-            $email = test_input($_POST["email"]);
-        }*/
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $email = test_input($_POST["email"]);
-        } else {
-            $emailErr = "Invalid email address";
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                $email = test_input($_POST["email"]);
+            } else {
+                echo("$email is not a valid email address");
+            }
         }
 
+        /*
+            VALIDATE WEBSITE URL. If a URL has been entered, it checks
+            to see that it is valid. Else it will print an error message.
+        */
         if (empty($_POST["webURL"])) {
             $webURLErr = "A website URL is required";
         } else {
-            $webURL = test_input($_POST["webURL"]);
+            if (!filter_var($webURL, FILTER_VALIDATE_URL) === false) {
+                $webURL = test_input($_POST["webURL"]);
+            } else {
+                echo("That is not a valid URL");
+            }
         }
 
-        if (empty($_POST["webIP"])) {
-            $webIPErr = "An IP address is required";
+        /*
+            Gets IP address by the website input.
+        */
+        $webIP = gethostbyname($webURL);
+
+        /*
+            Check to see a gender has been selected.
+        */
+        $gender = $_POST['gender'];  
+        if ($gender == "female") {          
+            $gender = "Female.";      
+        }else if ($gender == "male"){
+            $gender = "Male.";
         } else {
-            $webIP = test_input($_POST["webIP"]);
+            echo("Must select a gender.");
         }
+         
+        /*
+            Check to see that at least two preferred communication 
+            methods have been selected.
+        */
+        $comm = $_POST['comm'];
+        if($comm == "Post"){
+            
+        } else if($comm == "Email"){
+            
+        } else if($comm == "Phone"){
+            
+        } else {
+            echo("Must select a preferred communication method.");
+        }
+
+
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+        $uploadOk = 1;
+        $imageFileType = pathi
+    
     }
 
+    //TEST INPUT
     function test_input($data) {
         $data = trim($data);
         $data = stripslashes($data);
@@ -72,8 +143,10 @@
         return $data;
     }
 
- //   public function printResults(){
-        
+
+
+
+     //PRINT INPUT.
         echo "<h2>Your Input:</h2>";
         echo "Full Name: ";
         echo $name;
@@ -102,13 +175,13 @@
         echo "Website IP Address: ";
         echo $webIP;
         echo "<br>";
-
+        
         echo "Preferred Communication: ";
         echo $comm;
         echo "<br>";
 
-//    }
-     
+        echo "File uploaded: ";
+        echo $resumeFile;
 ?>
 
 <!DOCTYPE html>
