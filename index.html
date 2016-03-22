@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="styles/style.css">
+        <meta charset="utf-8" />
+        <title>Job Application</title>
+    </head>
+
+    <body>
+        <div id="aForm">
+        <h1>Job Application</h1>
+        <form id="submission" action="processing.php"  method="post">
+            Name: <input type="text" name="fullName">
+                  <span class="error">* <?php echo $nameErr;?> </span><br>
+                  
+            Address: <input type="text" name="address">
+                  <span class="error">* <?php echo $addressErr;?> </span><br>
+
+            Phone Number: <input type="text" name="phone">
+                  <span class="error">* <?php echo $phoneErr;?> </span><br>
+            (XXX-XXX-XXXX)<br> 
+            Email Address: <input type="text" name="email">
+                  <span class="error">* <?php echo $emailErr;?> </span><br>
+
+            Gender: female <input type="radio" name="gender" value="female"><br>
+                    male <input type="radio" name="gender" value="male"><br>
+            Website URL: <input type="text" name="webURL">
+                  <span class="error">* <?php echo $webURLErr;?> </span><br>
+
+            Website IP Address: <input type="text" name="webIP">
+                  <span class="error">* <?php echo $webIPErr;?> </span><br>
+
+            Preferred Communications: 
+                  <span class="error">* <?php echo $commErr;?> </span><br>
+                    Post<input type="checkbox" name="comm" value="Post"><br>
+                    E-Mail<input type="checkbox" name="comm" value="Email"><br>
+                    Phone<input type="checkbox" name="comm" value="Phone"><br>
+
+            Select your resume to upload:<input type="file" name="resumeFile" id="resume"><br>
+                <input type="submit" value="Upload Resume" name="submit"><br>
+    
+
+            <input type="submit" value="Submit Application">
+        </form>
+        </div>
+    </body>
+</html>
