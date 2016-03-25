@@ -12,7 +12,7 @@
         <h1>Job Application</h1>
         <form id="submission" action="processing.php"  method="post">
             Name: <input type="text" name="fullName">
-                  <span class="error">* <?php echo $nameErr;?> </span><br>
+                  <span class="error">* <?php echo $fullNameErr;?> </span><br>
                   
             Address: <input type="text" name="address">
                   <span class="error">* <?php echo $addressErr;?> </span><br>
@@ -23,9 +23,9 @@
             Email Address: <input type="text" name="email">
                   <span class="error">* <?php echo $emailErr;?> </span><br>
 
-            Gender: female <input type="radio" name="gender" value="female"><br>
+            Gender: <span class="error">* <?php echo $genderErr;?> </span>
+                    female <input type="radio" name="gender" value="female"><br>
                     male <input type="radio" name="gender" value="male"><br>
-                  <span class="error">* <?php echo $genderErr;?> </span><br>
             Website URL: <input type="text" name="webURL">
                   <span class="error">* <?php echo $webURLErr;?> </span><br>
 
@@ -34,14 +34,13 @@
 
             Preferred Communications: 
                   <span class="error">* <?php echo $commErr;?> </span><br>
-                    Post<input type="checkbox" name="comm" value="Post"><br>
-                    E-Mail<input type="checkbox" name="comm" value="Email"><br>
-                    Phone<input type="checkbox" name="comm" value="Phone"><br>
+                    Post<input type="checkbox" name="comm[]" value="Post"><br>
+                    E-Mail<input type="checkbox" name="comm[]" value="Email"><br>
+                    Phone<input type="checkbox" name="comm[]" value="Phone"><br>
 
-            Select your resume to upload:<input type="file" name="resumeFile" id="resume"><br>
-                <input type="submit" value="Upload Resume" name="submit"><br>
+            Select your resume to upload:<input type="file" name="UploadFileField" id="resume"><br>
     
-                <input type="submit" value="Submit Application">
+                <input type="submit" value="Submit Application" name="SubmitButton">
         </form>
         </div>
     </body>
