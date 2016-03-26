@@ -7,39 +7,47 @@
         <meta charset="utf-8" />
         <title>Job Application</title>
     </head>
+
     <body>
         <div id="aForm">
         <h1>Job Application</h1>
-        <form id="submission" action="processing.php"  method="post">
+        <form id="submission" action="processing.php"  method="post" enctype="multipart/form-data">
             Name: <input type="text" name="fullName">
-                  <span class="error">* <?php echo $fullNameErr;?> </span><br>
-                  
+                  <span class="error">* <?php echo $nameErr;?> </span><br>
+            <br>
+
             Address: <input type="text" name="address">
                   <span class="error">* <?php echo $addressErr;?> </span><br>
+            <br>
 
             Phone Number: <input type="text" name="phone">
                   <span class="error">* <?php echo $phoneErr;?> </span><br>
-            (XXX-XXX-XXXX)<br> 
+            (XXX-XXX-XXXX)<br>
+            <br>
+
             Email Address: <input type="text" name="email">
                   <span class="error">* <?php echo $emailErr;?> </span><br>
+            <br>
 
-            Gender: <span class="error">* <?php echo $genderErr;?> </span>
-                    female <input type="radio" name="gender" value="female"><br>
-                    male <input type="radio" name="gender" value="male"><br>
+            Gender: <span class="error">* <?php echo $genderErr;?> </span><br>
+                    &emsp; Female <input type="radio" name="gender" value="female"><br>
+                    &emsp; Male <input type="radio" name="gender" value="male"><br>
+            <br>
+
             Website URL: <input type="text" name="webURL">
                   <span class="error">* <?php echo $webURLErr;?> </span><br>
-
-            Website IP Address: <input type="text" name="webIP">
-                  <span class="error">* <?php echo $webIPErr;?> </span><br>
+            <br>
 
             Preferred Communications: 
                   <span class="error">* <?php echo $commErr;?> </span><br>
-                    Post<input type="checkbox" name="comm[]" value="Post"><br>
-                    E-Mail<input type="checkbox" name="comm[]" value="Email"><br>
-                    Phone<input type="checkbox" name="comm[]" value="Phone"><br>
+                    &emsp; Post<input type="checkbox" name="comm[]" value="Post"><br>
+                    &emsp; E-Mail<input type="checkbox" name="comm[]" value="Email"><br>
+                    &emsp; Phone<input type="checkbox" name="comm[]" value="Phone"><br>
 
-            Select your resume to upload:<input type="file" name="UploadFileField" id="resume"><br>
-    
+            <br>
+
+            Select your resume to upload:<input type="file" name="file" id="resume"><br>
+                <span class="error">* <?php echo $upFileErr;?> </span><br>
                 <input type="submit" value="Submit Application" name="SubmitButton">
         </form>
         </div>

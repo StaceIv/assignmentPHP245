@@ -1,50 +1,38 @@
 <?php
 /*
-    1 - Make sure everything is filled out. NOT DONE
-    2 - Valid phone number input.           
-    3 - valid email, URL, and IP            
-        use PHP filter_var
-    4 - At least 2 preferred comm
-        methods should be checked off.
-    5 - Only M.Word or PDF can be uploaded.
-    6 - Max filesize is 2 megabytes.
-    7 - Display what the errors are. 
-        invalid phone, email, name, etc...
-    PROBLEMS:
-        - When submitted blank, it still tries to print input instead
-    of giving a red message telling the user they must input required info.
-        - How to get file upload for resume?
-        - Check if a preferred communication method has been chosen.
-            Make sure two are chosen. 
-        - When valid email address is entered, it doesn't display when the 
-    form is submitted.
-        - Email validation doesn't work. Says all emails are invalid.
-        - upload resume.
+    Assignment Two for CIS 245. 
+    UFV Winter 2016, Due March 25th, 2016
+    Anastasija Ivanovic - 300125976
 */
 
-/*Check if fields are empty or not.*/
-    
-    $nameErr = $phoneErr = $addressErr = $emailErr = $webURLErr = $webIPErr = $genderErr = $resumeFileErr = $commErr = ""; 
-    $name = $phone = $address = $email = $webURL = $webIP = $gender = $resumeFile = $comm = "";    
+    $nameErr = $phoneErr = $addressErr = $emailErr = $webURLErr = $webIPErr = $genderErr = $upFileErr = $commErr = ""; 
+    $name = $phone = $address = $email = $webURL = $webIP = $gender = $upFile = $comm = "";    
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $errors = FALSE;
         /*
             VALIDATE NAME. Checks to see if a name was entered. If not
             then it prints a message telling the user they must enter a name.
             It also checks that only alphanumeric characters
             have been enteredd in the name space.
-            -----------------------------------------VALIDATION WORKS.
         */
         if (empty($_POST["fullName"])) {
             $nameErr = "Name is required";
+            $errors = TRUE;
         } else {
             $name = test_input($_POST["fullName"]);
-            if(!preg_match ("/^[a-zA-Z\s]+$/",$name)) { echo("Invalid Name.");}
+            if(!preg_match ("/^[a-zA-Z\s]+$/",$name)) { 
+                $nameErr = "Invalid Name";
+                $errors = TRUE;
+            }
         }
 
-        //CHECK ADDRESS
+        /*
+            VALIDATE ADDRESS. Check that an address has been entered.
+        */
         if (empty($_POST["address"])) {
             $addressErr = "An address is required";
+            $errors = TRUE;
         } else {
             $address = test_input($_POST["address"]);
         }
@@ -53,64 +41,42 @@
             VALIDATE PHONE NUMBER. Checks to see that the field has not been
             left blank. If a number has been enetered, it checks to see
             that the correct format has been used.
-            ---------------------VALIDATION WORKS EXCEPT FOR xxx.xxx.xxxx format
         */
         if (empty($_POST["phone"])) {
             $phoneErr = "A phone number is required";
+            $errors = TRUE;
         } else {
             $phone = test_input($_POST["phone"]);
-            if(!preg_match("/^(\d[\s-]?)?[\(\[\s-]{0,2}?\d{3}[\)\]\s-]{0,2}?\d{3}[\s-]?\d{4}$/i",$phone)) { die ("Invalid Phone Number.");}
+            if(!preg_match("/^(\d[\s-]?)?[\(\[\s-]{0,2}?\d{3}[\)\]\s-]{0,2}?\d{3}[\s-]?\d{4}$/i",$phone)) { 
+                $phoneErr = "Invalid Phone Number.";
+                $errors = TRUE;
+            }
         }
 
         /*
             VALIDATE EMAIL. If an email has been entered, it checks to see
             that the email is valid.
-            --------------------------when stacey.ivanovic007@gmail.com is
-                                      entered, it said invalid.
-
-            PROBLEM: Email is always invalid.
-        
-        //If this is empty, error message
-        //Else 
-        if (empty($_POST["email"])) {
-            $emailErr = "Email is required";
+        */
+        if(empty($_POST["email"])){
+            $emailErr="Email is Required";
+            $errors = TRUE;
         } else {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                $email = $_POST["email"];
-            } else {
-                echo("Ivalid email address.");
-            }
-        }*/
-
-        if(empty($_POST["email"]))
-        {
-            $emailErr="* Email is Required";
-            $valid=false;
-        }
-        else
-        {
             $email=test_input($_POST["email"]);
-            if (!preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/",$email))
-            {
-                $emailErr="&nbsp;&nbsp; Enter a valid Email ID";
-                $valid=false;
+            if (!preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/",$email)){
+                $emailErr="&nbsp; Invalid email.";
+                $errors = TRUE;
             }
         }
 
         /*
             VALIDATE WEBSITE URL. If a URL has been entered, it checks
             to see that it is valid. Else it will print an error message.
-
-            PROBLEM: URL is always invalid.
         */
         if (empty($_POST["webURL"])) {
             $webURLErr = "A website URL is required";
+            $errors = TRUE;
         } else {
-            if (!filter_var($webURL, FILTER_VALIDATE_URL) === false) {
-                $webURL = test_input($_POST["webURL"]);
-            } else {
-                echo("That is not a valid URL");
-            }
+            $webURL = test_input($_POST["webURL"]);
         }
 
         /*
@@ -119,7 +85,7 @@
         $webIP = gethostbyname($webURL);
 
         /*
-            Check to see a gender has been selected.
+            VALIDATE GENDER. Check to see a gender has been selected.
         */
         $gender = $_POST['gender'];  
         if ($gender == "female") {          
@@ -127,47 +93,63 @@
         }else if ($gender == "male"){
             $gender = "Male.";
         } else {
-            echo("Must select a gender.");
+            $genderErr = "Must select a gender.";
+            $errors = TRUE;
         }
          
         /*
+            VALIDATE COMMUNICATION METHOD.
             Check to see that at least two preferred communication 
-            methods have been selected.
+            methods have been selected.  
         */
-        //First check to see if anything has been selected.
-        //If something has been selected, check to see that 
-        //at least two items are selected.
-        //Else if nothing has been selected, print that error message.
-        if(empty($_POST['comm'])){
-                 $commErr = "Must select at least 2 methods of communication.";
+        $boxCount = count($_POST["comm"]);
+        if($boxCount < 2){
+            $commErr = "Must select at least 2 methods of communication.";
+            $errors = TRUE;
         } 
 
         /*
+            VALIDATE FILE UPLOAD.
             The User needs to be able to upload a .pdf or .doc or .docx file
-
-            PROBLEMS:
-                - File is not saved to uploads folder when uploaded.
-                - Filename doesn't display in return input thing.
         */
-        if(isset($_FILES['UploadFileField'])){
-            
-            $UploadName = $_FILES['UploadFileField']['name'];
-            $UploadName = mt_rand(100000, 999999).$UploadName;
-            $UploadTmp = $_FILES['UploadFileField']['tmp_name'];
-            $UploadType = $_FILES['UploadFileField']['type'];
-            $FileSize = $_FILES['UploadFileField']['size'];
+        $upFile = $_FILES['file']['name'];
+        $size = $_FILES['file']['size'];
+        $type = $_FILES['file']['type'];
 
-            $UploadName = preg_replace("#[^a-z0-9.]#i", "", $UploadName);
+        $tmp_name = $_FILES['file']['tmp_name'];
 
-            if(($FileSize > 125000)){
-                die("Error - File to Big");
-            }
+        if(isset($upFile)){
+            if(!empty($upFile)){
 
-            if(!$UploadTmp){
-                die("No File Selected, Please Upload Again.");
+                //Check file type. Only word docs and pdfs accepted.
+                if (($_FILES["file"]["type"] == "application/pdf")
+                || ($_FILES["file"]["type"] == "application/doc")
+                || ($_FILES["file"]["type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")){
+
+                    //Check Size of file. Must be less than 2 megabytes.
+                    if($size < 2097152){
+                        $location = "uploads/";
+                        if(move_uploaded_file($tmp_name, $location.$upFile)){
+                            $fileName = $upFile;
+                            $uploaded = "Upload Successful";
+                        } else {
+                            $upFileErr = "Upload Unsuccessful.";
+                            $errors = TRUE;
+                        }
+                    } else {
+                         $upFileErr = "File is too large to upload. 
+                                   Must be less than 2 Mb. Please try again.";
+                         $errors = TRUE;
+                    }
+                     
+                 } else {
+                     $upFileErr = "Only Word documents, or PDF files may be uploaded.";
+                     $errors = TRUE;
+                 }
+
             } else {
-                move_uploaded_file($UploadTmp, "uploads/" . $UploadName);
-                echo $UploadName . " has been uploaded.";
+                $upFileErr = "Please select a file to upload.";
+                $errors = TRUE;
             }
         }
     }
@@ -180,63 +162,49 @@
         return $data;
     }
 
-    if (empty($phoneErr)) {
-     //PRINT INPUT.
-        echo $phoneErr ;
-        echo "<h2>Your Input:</h2>";
-        echo "Full Name: ";
-        echo $name;
-        echo "<br>";
+if($errors == false){
+    echo "<h2>Your Input:</h2>";
+    echo "Full Name: ";
+    echo $name;
+    echo "<br><br>";
 
-        echo "Address: ";
-        echo $address;
-        echo "<br>";
+    echo "Address: ";
+    echo $address;
+    echo "<br><br>";
 
-        echo "Phone Number: ";
-        echo $phone;
-        echo "<br>";
+    echo "Phone Number: ";
+    echo $phone;
+    echo "<br><br>";
 
-        echo "Email: ";
-        echo $email;
-        echo "<br>";
+    echo "Email: ";
+    echo $email;
+    echo "<br><br>";
+    
+    echo "Gender: ";
+    echo $gender;
+    echo "<br><br>";
 
-        echo "Gender: ";
-        echo $gender;
-        echo "<br>";
+    echo "Website URL: ";
+    echo $webURL;
+    echo "<br><br>";
 
-        echo "Website URL: ";
-        echo $webURL;
-        echo "<br>";
-
-        echo "Website IP Address: ";
-        echo $webIP;
-        echo "<br>";
-        
-        echo "Preferred Communication: ";
+    echo "Website IP Address: ";
+    echo $webIP;
+    echo "<br><br>";
+    
+    echo "Preferred Communication: ";
         //Use a for loop to display all the 
         //communications methods chosen.
-        foreach($_POST['comm'] as $check){
-                echo $check . "<br>";
-        }
-
-        echo "File uploaded: ";
-        echo $UploadName;
-        echo "<br>";
+    foreach($_POST['comm'] as $check){
+      echo $check . "<br>";
     }
-   /* else
-    {
-        $html = file_get_html('index.htm');
-        echo $html;
-    }*/
-?>
+    echo "<br><br>";
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title></title>
-    </head>
-    <body>
-        
-    </body>
-</html>
+    echo "File uploaded: ";
+    echo $fileName . "<br>";
+    echo $uploaded . "<br>";
+    echo "<br><br>";
+}
+
+    include "index.html"
+?>
